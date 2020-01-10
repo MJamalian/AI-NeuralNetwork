@@ -9,6 +9,9 @@ import functools
 import numpy as np
 from utility import alphabetize, abs_mean
 
+def sigmoid(m):
+    return 1 / (1 + math.exp(-m))
+
 class ValuedElement(object):
     """
     This is an abstract class that all Network elements inherit from
@@ -60,7 +63,8 @@ class Input(ValuedElement,DifferentiableElement):
         
         returns: number (float or int)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        return self.my_value
 
     def dOutdX(self, elem):
         """
@@ -71,7 +75,8 @@ class Input(ValuedElement,DifferentiableElement):
 
         returns: number (float or int)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        return 0
 
 class Weight(ValuedElement):
     """
@@ -175,7 +180,12 @@ class Neuron(DifferentiableElement):
 
         returns: number (float or int)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        neuron_output = 0
+        for i, my_input in enumerate(self.get_inputs()):
+            neuron_output += my_input.output() * self.my_weights[i].get_value()
+        return sigmoid(neuron_output)
+
 
     def dOutdX(self, elem):
         # Implement compute_doutdx instead!!
@@ -195,7 +205,12 @@ class Neuron(DifferentiableElement):
 
         returns: number (float/int)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        doutdx = 0
+        for i, my_input in enumerate(self.get_inputs()):
+            neuron_output = self.output()
+            doutdx += self.my_weights[i].get_value() * neuron_output * (1 - neuron_output) * my_input.dOutdX(elem)
+        return doutdx
 
     def get_weights(self):
         return self.my_weights
@@ -230,7 +245,8 @@ class PerformanceElem(DifferentiableElement):
         
         returns: number (float/int)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        return -0.5*(self.my_desired_val - self.get_input().output())**2
 
     def dOutdX(self, elem):
         """
@@ -241,7 +257,8 @@ class PerformanceElem(DifferentiableElement):
 
         returns: number (int/float)
         """
-        raise NotImplementedError("Implement me!")
+        # raise NotImplementedError("Implement me!")
+        return (self.my_desired_val - self.get_input().output()) * self.get_input().dOutdX(elem)
 
     def set_desired(self,new_desired):
         self.my_desired_val = new_desired
@@ -329,17 +346,17 @@ def make_neural_net_basic():
     i1 = Input('i1', 0.0)
     i2 = Input('i2', 0.0)
 
-    w1A = Weight('w1A', 1)
-    w2A = Weight('w2A', 1)
-    wA  = Weight('wA', 1)
+    w1A01 = Weight('w1A01', 1)
+    w2A01 = Weight('w2A01', 1)
+    w0A01  = Weight('wA01', 1)
 
     # Inputs must be in the same order as their associated weights
-    A = Neuron('A', [i1,i2,i0], [w1A,w2A,wA])
-    P = PerformanceElem(A, 0.0)
+    A01 = Neuron('A01', [i1,i2,i0], [w1A01,w2A01,w0A01])
+    P = PerformanceElem(A01, 0.0)
 
     # Package all the components into a network
     # First list the PerformanceElem P, Then list all neurons afterwards
-    net = Network(P,[A])
+    net = Network(P,[A01])
     return net
 
 def make_neural_net_two_layer():
@@ -439,8 +456,8 @@ def train(network,
                   %(iteration,
                     abs_mean_performance))
 
-    print('weights:', network.weights)
-    plot_decision_boundary(network, data)
+    # print('weights:', network.weights)
+    # plot_decision_boundary(network, data)
 
 
 def test(network, data, verbose=False):

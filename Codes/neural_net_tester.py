@@ -6,7 +6,7 @@ from neural_net import train, test,\
      make_neural_net_basic,\
      make_neural_net_two_layer,\
      make_neural_net_challenging,\
-     make_neural_net_large
+     make_neural_net_two_moons
 
 from neural_net_data import simple_data_sets,\
      harder_data_sets,\
@@ -51,7 +51,7 @@ if __name__=="__main__":
 
         elif test_name == "two_moons":
             # this dataset illustrates the overfitting problem
-            main(make_neural_net_large, two_moons_data_set, max_iterations=1000)
+            main(make_neural_net_two_moons, two_moons_data_set, max_iterations=1000)
 
         else:
             print("unrecognized test name %s" %(test_name))
