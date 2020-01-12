@@ -25,9 +25,12 @@ def main(neural_net_func, data_sets, rate=1.0, max_iterations=10000):
         print("Trained weights:")
         for w in nn.weights:
             print("Weight '%s': %f"%(w.get_name(),w.get_value()))
+        print("Testing on %s train-data" %(name))
+        result = test(nn, training_data, verbose=verbose)
+        print("Accuracy on train data: %f"%(result))
         print("Testing on %s test-data" %(name))
         result = test(nn, test_data, verbose=verbose)
-        print("Accuracy: %f"%(result))
+        print("Accuracy on test data: %f"%(result))
 
 if __name__=="__main__":
     test_names = ["simple"]
@@ -51,7 +54,7 @@ if __name__=="__main__":
 
         elif test_name == "two_moons":
             # this dataset illustrates the overfitting problem
-            main(make_neural_net_two_moons, two_moons_data_set, max_iterations=1000)
+            main(make_neural_net_two_moons, two_moons_data_set, max_iterations=100)
 
         else:
             print("unrecognized test name %s" %(test_name))
